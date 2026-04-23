@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+  
+  --color-agri-bg: #F8FAF8;
+  --color-agri-ink: #1A2E1A;
+  --color-agri-primary: #2D5A27;
+  --color-agri-secondary: #E8F5E9;
+  --color-agri-border: #E5E7EB;
+}
+
+body {
+  @apply bg-agri-bg text-agri-ink font-sans;
+}
+
+@keyframes pulse-custom {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.status-dot {
+  animation: pulse-custom 2s infinite;
+}
+
+.camera-frame-bracket {
+  @apply border-white;
+}
+
+

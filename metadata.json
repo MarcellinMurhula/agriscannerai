@@ -1,0 +1,6 @@
+{
+  "name": "AgriScanner IA",
+  "description": "Plateforme intelligente de gestion de cultures pour agriculteurs artisanaux. Permet de scanner ses produits pour obtenir un diagnostic de santé et des prédictions de croissance via l'IA Gemini.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["AI-powered crop diagnosis", "Field management", "Growth prediction"]
+}

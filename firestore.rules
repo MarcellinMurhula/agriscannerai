@@ -1,0 +1,80 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 3. Primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // 2. Validation Blueprints
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['displayName', 'email', 'createdAt']) &&
+             data.keys().size() <= 5 &&
+             data.displayName is string && data.displayName.size() <= 100 &&
+             data.email is string && data.email.size() <= 200 &&
+             data.createdAt == request.time;
+    }
+
+    function isValidField(data) {
+      return data.keys().hasAll(['name', 'createdAt', 'updatedAt']) &&
+             data.keys().size() <= 6 &&
+             data.name is string && data.name.size() <= 100 &&
+             data.createdAt == request.time &&
+             data.updatedAt == request.time;
+    }
+
+    function isValidCropScan(data) {
+      return data.keys().hasAll(['imageUrl', 'diagnosis', 'createdAt']) &&
+             data.keys().size() <= 7 &&
+             data.imageUrl is string && data.imageUrl.size() <= 1000 &&
+             data.diagnosis is string && data.diagnosis.size() <= 5000 &&
+             data.createdAt == request.time;
+    }
+
+    // 1. Master Gate (Relational Sync & Secure List Queries)
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUserProfile(incoming());
+      allow update: if isOwner(userId) && isValidUserProfile(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL'])
+      );
+
+      match /fields/{fieldId} {
+        allow list, get: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(fieldId) && isValidField(incoming());
+        allow update: if isOwner(userId) && isValidField(incoming()) && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['name', 'location', 'size', 'cropType', 'updatedAt'])
+        );
+        allow delete: if isOwner(userId);
+
+        match /scans/{scanId} {
+          allow list, get: if isOwner(userId);
+          allow create: if isOwner(userId) && isValidId(scanId) && isValidCropScan(incoming());
+          // Scans are typically immutable records of a point in time
+          allow delete: if isOwner(userId);
+        }
+      }
+    }
+  }
+}

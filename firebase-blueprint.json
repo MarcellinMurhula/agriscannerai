@@ -1,0 +1,58 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Information about the farmer",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "photoURL": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["displayName", "email", "createdAt"]
+    },
+    "Field": {
+      "title": "Field",
+      "description": "A plot of land managed by the farmer",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "location": { "type": "string" },
+        "size": { "type": "string" },
+        "cropType": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "createdAt", "updatedAt"]
+    },
+    "CropScan": {
+      "title": "Crop Scan",
+      "description": "A diagnostic scan of a plant using AI",
+      "type": "object",
+      "properties": {
+        "imageUrl": { "type": "string" },
+        "diagnosis": { "type": "string" },
+        "prediction": { "type": "string" },
+        "status": { "type": "string", "enum": ["healthy", "warning", "diseased"] },
+        "recommendations": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["imageUrl", "diagnosis", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Farmer profiles"
+    },
+    "/users/{userId}/fields/{fieldId}": {
+      "schema": "Field",
+      "description": "Fields associated with a farmer"
+    },
+    "/users/{userId}/fields/{fieldId}/scans/{scanId}": {
+      "schema": "CropScan",
+      "description": "Historical scans for a specific field"
+    }
+  }
+}
