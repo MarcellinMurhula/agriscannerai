@@ -56,5 +56,13 @@ Response MUST be a JSON object with:
   const text = response.text;
   if (!text) throw new Error("No response from AI");
   
-  return JSON.parse(text) as DiagnosisResult;
+  // Clean JSON string from potential markdown wrappers
+  const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
+  
+  try {
+    return JSON.parse(cleanJson) as DiagnosisResult;
+  } catch (e) {
+    console.error("JSON parsing error:", e, "Original text:", text);
+    throw new Error("Erreur de formatage de la réponse IA");
+  }
 }

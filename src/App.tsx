@@ -67,26 +67,26 @@ interface ScanData extends DiagnosisResult {
 function Header() {
   const { user, logout } = useAuth();
   return (
-    <header className="h-20 bg-white border-b border-agri-border flex items-center justify-between px-8 shrink-0">
+    <header className="h-16 md:h-20 bg-white border-b border-agri-border flex items-center justify-between px-4 md:px-8 shrink-0 relative z-30">
       <div className="flex flex-col">
-        <h1 className="text-xl font-bold text-gray-800">
+        <h1 className="text-lg md:text-xl font-bold text-gray-800 leading-tight">
           {user?.displayName ? `Ferme de ${user.displayName.split(' ')[0]}` : 'Ma Ferme'}
         </h1>
-        <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Zone de Diagnostic • AgriScanner IA</p>
+        <p className="text-[9px] md:text-[10px] text-gray-500 uppercase tracking-widest font-bold">Zone de Diagnostic • IA</p>
       </div>
       
       {user && (
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3 md:gap-6">
           <div className="hidden sm:flex flex-col items-end">
             <p className="text-sm font-medium">{user.displayName}</p>
             <p className="text-xs text-agri-primary">Artisan Agriculteur</p>
           </div>
           <button 
             onClick={logout}
-            className="w-10 h-10 rounded-full bg-agri-secondary flex items-center justify-center text-agri-primary hover:bg-agri-primary hover:text-white transition-all shadow-sm"
+            className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-agri-secondary flex items-center justify-center text-agri-primary hover:bg-agri-primary hover:text-white transition-all shadow-sm"
             title="Se déconnecter"
           >
-            <LogOut className="w-5 h-5" />
+            <LogOut className="w-4 h-4 md:w-5 md:h-5" />
           </button>
         </div>
       )}
@@ -96,35 +96,70 @@ function Header() {
 
 function Sidebar({ activeTab, onTabChange }: { activeTab: string, onTabChange: (tab: string) => void }) {
   return (
-    <aside className="w-20 bg-white border-r border-agri-border flex flex-col items-center py-8 gap-10 shrink-0">
-      <div className="w-10 h-10 bg-agri-primary rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">A</div>
-      <nav className="flex flex-col gap-8">
+    <>
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex w-20 bg-white border-r border-agri-border flex-col items-center py-8 gap-10 shrink-0">
+        <div className="w-10 h-10 bg-agri-primary rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">A</div>
+        <nav className="flex flex-col gap-8">
+          <button 
+            onClick={() => onTabChange('fields')}
+            className={cn(
+              "p-3 rounded-lg transition-all",
+              activeTab === 'fields' ? "bg-agri-secondary text-agri-primary" : "text-gray-400 hover:text-agri-primary"
+            )}
+          >
+            <LayoutGrid className="w-6 h-6" />
+          </button>
+          <button 
+            className="p-3 text-gray-400 hover:text-agri-primary transition-colors"
+            title="Analyses (bientôt)"
+          >
+            <Camera className="w-6 h-6" />
+          </button>
+          <button 
+            className="p-3 text-gray-400 hover:text-agri-primary transition-colors"
+            title="Statistiques (bientôt)"
+          >
+            <Activity className="w-6 h-6" />
+          </button>
+        </nav>
+        <div className="mt-auto mb-4 p-3 text-gray-400 hover:text-agri-primary cursor-pointer">
+          <Settings className="w-6 h-6" />
+        </div>
+      </aside>
+
+      {/* Mobile Bottom Nav */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-agri-border flex items-center justify-around px-6 z-40 bg-white/80 backdrop-blur-md">
         <button 
           onClick={() => onTabChange('fields')}
           className={cn(
-            "p-3 rounded-lg transition-all",
-            activeTab === 'fields' ? "bg-agri-secondary text-agri-primary" : "text-gray-400 hover:text-agri-primary"
+            "p-2 rounded-xl transition-all flex flex-col items-center gap-1",
+            activeTab === 'fields' ? "text-agri-primary" : "text-gray-400"
           )}
         >
-          <LayoutGrid className="w-6 h-6" />
+          <LayoutGrid className="w-5 h-5" />
+          <span className="text-[10px] font-bold uppercase">Champs</span>
         </button>
         <button 
-          className="p-3 text-gray-400 hover:text-agri-primary transition-colors"
-          title="Analyses (bientôt)"
+          className="p-2 text-gray-400 flex flex-col items-center gap-1"
         >
-          <Camera className="w-6 h-6" />
+          <Camera className="w-5 h-5" />
+          <span className="text-[10px] font-bold uppercase">Scanner</span>
         </button>
         <button 
-          className="p-3 text-gray-400 hover:text-agri-primary transition-colors"
-          title="Statistiques (bientôt)"
+          className="p-2 text-gray-400 flex flex-col items-center gap-1"
         >
-          <Activity className="w-6 h-6" />
+          <Activity className="w-5 h-5" />
+          <span className="text-[10px] font-bold uppercase">Stats</span>
+        </button>
+        <button 
+          className="p-2 text-gray-400 flex flex-col items-center gap-1"
+        >
+          <UserIcon className="w-5 h-5" />
+          <span className="text-[10px] font-bold uppercase">Profil</span>
         </button>
       </nav>
-      <div className="mt-auto mb-4 p-3 text-gray-400 hover:text-agri-primary cursor-pointer">
-        <Settings className="w-6 h-6" />
-      </div>
-    </aside>
+    </>
   );
 }
 
@@ -141,17 +176,17 @@ function Landing() {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-xl z-10"
       >
-        <div className="mx-auto w-16 h-16 bg-agri-primary rounded-2xl flex items-center justify-center text-white shadow-2xl mb-8 font-bold text-2xl">A</div>
-        <h2 className="text-5xl font-bold mb-6 tracking-tight text-gray-800">
+        <div className="mx-auto w-16 h-16 bg-agri-primary rounded-2xl flex items-center justify-center text-white shadow-2xl mb-6 md:mb-8 font-bold text-2xl">A</div>
+        <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-gray-800">
           AgriScanner IA
         </h2>
-        <p className="text-lg text-gray-500 mb-10 leading-relaxed max-w-sm mx-auto">
+        <p className="text-base md:text-lg text-gray-500 mb-8 md:mb-10 leading-relaxed max-w-[280px] sm:max-w-sm mx-auto">
           Gestion minimaliste et diagnostic intelligent pour l'agriculture moderne.
         </p>
 
         <button 
           onClick={signIn}
-          className="bg-agri-primary text-white px-8 py-4 rounded-2xl font-bold text-lg flex items-center gap-3 mx-auto shadow-xl shadow-agri-primary/20 hover:scale-105 transition-all"
+          className="bg-agri-primary text-white px-6 md:px-8 py-3.5 md:py-4 rounded-2xl font-bold text-base md:text-lg flex items-center gap-3 mx-auto shadow-xl shadow-agri-primary/20 hover:scale-105 transition-all w-full sm:w-auto justify-center"
         >
           <img src="https://www.google.com/favicon.ico" className="w-5 h-5" alt="Google" />
           Se connecter avec Google
@@ -267,9 +302,17 @@ function AppContent() {
         imageUrl: `data:image/jpeg;base64,${base64}`,
         createdAt: serverTimestamp()
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error("Diagnosis error:", err);
-      alert("Une erreur est survenue lors du diagnostic.");
+      let message = "Une erreur est survenue lors du diagnostic.";
+      
+      if (err?.message?.includes("insufficient permissions")) {
+        message = "Erreur de stockage : Permission refusée. Veuillez contacter le support.";
+      } else if (err?.message?.includes("API key")) {
+        message = "Erreur IA : La clé API n'est pas configurée correctement.";
+      }
+      
+      alert(message);
     } finally {
       setIsDiagnosing(false);
     }
@@ -286,13 +329,13 @@ function AppContent() {
   if (!user) return <Landing />;
 
   return (
-    <div className="flex h-screen bg-agri-bg overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen bg-agri-bg overflow-hidden">
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
       
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden pb-16 md:pb-0">
         <Header />
         
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 overflow-y-auto p-4 md:p-8">
           <AnimatePresence mode="wait">
             {!selectedField ? (
               <motion.div 
@@ -302,21 +345,21 @@ function AppContent() {
                 exit={{ opacity: 0, y: -10 }}
                 className="max-w-6xl mx-auto"
               >
-                <div className="flex items-center justify-between mb-10">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 md:mb-10 gap-6">
                   <div>
-                    <h2 className="text-3xl font-bold text-gray-800">Tableau de Bord</h2>
-                    <p className="text-gray-500">Gérez vos {fields.length} zones de culture actives</p>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800 tracking-tight">Tableau de Bord</h2>
+                    <p className="text-sm text-gray-500">Gérez vos {fields.length} zones de culture actives</p>
                   </div>
                   <button 
                     onClick={() => setShowAddField(true)}
-                    className="bg-agri-primary text-white h-12 px-6 rounded-2xl flex items-center gap-2 shadow-lg shadow-agri-primary/20 hover:scale-105 active:scale-95 transition-all font-bold"
+                    className="bg-agri-primary text-white h-12 md:h-12 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-agri-primary/20 hover:scale-105 active:scale-95 transition-all font-bold w-full sm:w-auto"
                   >
                     <Plus className="w-5 h-5" />
                     NOUVEAU CHAMP
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
                   {fields.map(field => (
                     <FieldCard 
                       key={field.id} 
@@ -326,11 +369,11 @@ function AppContent() {
                   ))}
                   
                   {fields.length === 0 && (
-                    <div className="col-span-full py-32 text-center bg-white border border-dashed border-gray-200 rounded-[3rem]">
+                    <div className="col-span-full py-20 md:py-32 text-center bg-white border border-dashed border-gray-200 rounded-[2.5rem] px-6">
                       <div className="w-16 h-16 bg-agri-secondary text-agri-primary rounded-2xl flex items-center justify-center mx-auto mb-6">
                         <Sprout className="w-8 h-8" />
                       </div>
-                      <p className="text-gray-500 font-medium">Votre ferme est vide. Commencez par ajouter votre premier champ d'action.</p>
+                      <p className="text-gray-500 font-medium max-w-xs mx-auto text-sm md:text-base">Votre ferme est vide. Commencez par ajouter votre premier champ d'action.</p>
                     </div>
                   )}
                 </div>
@@ -343,56 +386,56 @@ function AppContent() {
                 exit={{ opacity: 0, x: -20 }}
                 className="max-w-6xl mx-auto"
               >
-                <div className="flex items-center justify-between mb-10">
+                <div className="flex flex-col shrink-0 gap-6 mb-8 md:mb-10">
                   <div className="flex items-center gap-4">
                     <button 
                       onClick={() => setSelectedField(null)}
-                      className="w-10 h-10 border border-gray-200 rounded-xl flex items-center justify-center hover:bg-white transition-all shadow-sm"
+                      className="w-10 h-10 border border-gray-200 rounded-xl flex items-center justify-center hover:bg-white transition-all shadow-sm shrink-0"
                     >
                       <ArrowLeft className="w-5 h-5 text-gray-600" />
                     </button>
                     <div>
-                      <h2 className="text-3xl font-bold text-gray-800">{selectedField.name}</h2>
-                      <p className="text-xs text-gray-500 uppercase tracking-widest font-bold">Historique & Diagnostic IA</p>
+                      <h2 className="text-2xl md:text-3xl font-bold text-gray-800 leading-tight">{selectedField.name}</h2>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Historique & Diagnostic IA</p>
                     </div>
                   </div>
                   <button 
                     onClick={() => setIsScanning(true)}
-                    className="bg-agri-primary text-white h-12 px-6 rounded-2xl flex items-center gap-2 shadow-lg shadow-agri-primary/20 hover:scale-105 active:scale-95 transition-all font-bold"
+                    className="bg-agri-primary text-white h-14 md:h-12 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-xl shadow-agri-primary/20 hover:scale-105 active:scale-95 transition-all font-bold w-full"
                   >
                     <Camera className="w-5 h-5" />
                     SCANNER LA PLANTE
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 min-h-0">
                   {/* Left Column - Diagnostic Summary */}
-                  <div className="lg:col-span-5 space-y-6">
-                    <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-                      <div className="flex items-center gap-3 mb-8">
+                  <div className="lg:col-span-12 xl:col-span-5 space-y-6">
+                    <div className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 shadow-sm">
+                      <div className="flex items-center gap-3 mb-6 md:mb-8">
                         <div className="w-10 h-10 bg-agri-secondary rounded-full flex items-center justify-center text-agri-primary">
-                          <Activity className="w-6 h-6" />
+                          <Activity className="w-5 h-5 md:w-6 md:h-6" />
                         </div>
-                        <h3 className="font-bold text-xl text-gray-800">Résumé du Champ</h3>
+                        <h3 className="font-bold text-lg md:text-xl text-gray-800">Résumé du Champ</h3>
                       </div>
                       
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="p-5 bg-agri-bg rounded-2xl border border-gray-50">
-                          <p className="text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-2">Total Scans</p>
-                          <p className="text-3xl font-bold text-agri-ink">{scans.length}</p>
+                      <div className="grid grid-cols-2 gap-3 md:gap-4">
+                        <div className="p-4 md:p-5 bg-agri-bg rounded-2xl border border-gray-50">
+                          <p className="text-[9px] md:text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1 md:mb-2 text-center sm:text-left">Total Scans</p>
+                          <p className="text-2xl md:text-3xl font-bold text-agri-ink text-center sm:text-left">{scans.length}</p>
                         </div>
-                        <div className="p-5 bg-agri-bg rounded-2xl border border-gray-50">
-                          <p className="text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-2">Santé Moy.</p>
-                          <p className="text-3xl font-bold text-green-600">
+                        <div className="p-4 md:p-5 bg-agri-bg rounded-2xl border border-gray-50">
+                          <p className="text-[9px] md:text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1 md:mb-2 text-center sm:text-left">Santé Moy.</p>
+                          <p className="text-2xl md:text-3xl font-bold text-green-600 text-center sm:text-left">
                             {scans.length > 0 ? (scans[0].status === 'healthy' ? '92%' : '65%') : '--'}
                           </p>
                         </div>
                       </div>
 
                       {scans.length > 0 && (
-                        <div className="mt-8 pt-8 border-t border-gray-50 space-y-6">
-                          <div className="flex items-start gap-4">
-                            <div className="mt-1 w-2 h-2 rounded-full bg-green-500 status-dot"></div>
+                        <div className="mt-6 md:mt-8 pt-6 md:pt-8 border-t border-gray-50 space-y-6">
+                          <div className="flex items-start gap-3 md:gap-4">
+                            <div className="mt-1.5 w-2 h-2 rounded-full bg-green-500 status-dot shrink-0"></div>
                             <div>
                               <h4 className="text-sm font-bold text-gray-800">État : {scans[0].status === 'healthy' ? 'Vigoureux' : 'À surveiller'}</h4>
                               <p className="text-xs text-gray-500 mt-1 leading-relaxed">
@@ -401,7 +444,7 @@ function AppContent() {
                             </div>
                           </div>
                           
-                          <div className="p-5 bg-agri-secondary rounded-3xl border border-agri-primary/10">
+                          <div className="p-5 bg-agri-secondary rounded-[2rem] border border-agri-primary/10">
                             <p className="text-[10px] font-bold text-agri-primary uppercase mb-2 tracking-widest leading-none">Recommandation Immédiate</p>
                             <div className="text-xs text-agri-primary leading-relaxed">
                               <ReactMarkdown>{scans[0].recommendations}</ReactMarkdown>
@@ -413,24 +456,24 @@ function AppContent() {
                   </div>
 
                   {/* Right Column - History Feed */}
-                  <div className="lg:col-span-7 space-y-4">
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-2">Flux d'Analyses</h3>
+                  <div className="lg:col-span-12 xl:col-span-7 space-y-4">
+                    <h3 className="text-[10px] md:text-sm font-bold uppercase tracking-widest text-gray-400 mb-2 px-1">Flux d'Analyses</h3>
                     
-                    <div className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4 md:gap-6 pb-4">
                       {scans.map((scan) => (
                         <motion.div 
                           key={scan.id}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="bg-white rounded-[2rem] border border-gray-50 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row group"
+                          className="bg-white rounded-[2rem] border border-gray-50 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col xl:flex-row group"
                         >
-                          <div className="w-full sm:w-48 aspect-square relative overflow-hidden bg-gray-100 shrink-0">
+                          <div className="w-full xl:w-48 aspect-video sm:aspect-square relative overflow-hidden bg-gray-100 shrink-0">
                             <img src={scan.imageUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Scan" />
                             <div className="absolute top-4 left-4">
                               <DiagnosisBadge status={scan.status} />
                             </div>
                           </div>
-                          <div className="flex-1 p-6 flex flex-col justify-between">
+                          <div className="flex-1 p-5 md:p-6 flex flex-col justify-between">
                             <div className="space-y-2">
                               <div className="flex items-center justify-between mb-1">
                                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
@@ -440,7 +483,7 @@ function AppContent() {
                                   {scan.createdAt?.toDate().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                               </div>
-                              <p className="text-sm text-gray-700 line-clamp-2 leading-relaxed">
+                              <p className="text-xs md:text-sm text-gray-700 line-clamp-3 md:line-clamp-2 leading-relaxed">
                                 {scan.diagnosis}
                               </p>
                             </div>
@@ -448,7 +491,8 @@ function AppContent() {
                             <div className="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between">
                               <div className="flex items-center gap-1 text-agri-primary font-bold text-[10px] uppercase tracking-widest">
                                 <TrendingUp className="w-3.5 h-3.5" />
-                                <span>Prédiction IA active</span>
+                                <span className="hidden sm:inline">IA AgriScanner active</span>
+                                <span className="sm:hidden">IA Active</span>
                               </div>
                               <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-agri-primary transition-colors" />
                             </div>
@@ -457,7 +501,7 @@ function AppContent() {
                       ))}
 
                       {scans.length === 0 && (
-                        <div className="py-32 text-center bg-white border border-dashed border-gray-100 rounded-[2.5rem]">
+                        <div className="col-span-full py-24 text-center bg-white border border-dashed border-gray-100 rounded-[2rem] md:rounded-[2.5rem]">
                           <Camera className="w-10 h-10 text-gray-200 mx-auto mb-4" />
                           <p className="text-gray-400 text-sm italic">Aucun scan réalisé pour cette parcelle.</p>
                         </div>
@@ -470,7 +514,7 @@ function AppContent() {
           </AnimatePresence>
         </div>
 
-        <footer className="h-12 px-8 flex items-center justify-between text-[10px] text-gray-400 border-t border-gray-50 bg-white shrink-0">
+        <footer className="hidden md:flex h-12 px-8 flex items-center justify-between text-[10px] text-gray-400 border-t border-gray-50 bg-white shrink-0">
           <div className="flex gap-6 font-bold tracking-widest uppercase">
             <span>© 2026 AgriScanner Platform</span>
             <span>Système: <span className="text-green-500">Opérationnel</span></span>
@@ -487,18 +531,18 @@ function AppContent() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-agri-ink/30 backdrop-blur-md flex items-center justify-center p-6"
+            className="fixed inset-0 z-50 bg-agri-ink/30 backdrop-blur-md flex items-center justify-center p-4 md:p-6"
           >
             <motion.div 
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className="bg-white w-full max-w-md p-10 rounded-[3rem] shadow-2xl border border-white"
+              className="bg-white w-full max-w-md p-6 md:p-10 rounded-[2.5rem] md:rounded-[3rem] shadow-2xl border border-white"
             >
-              <h3 className="text-2xl font-bold mb-2 text-agri-ink">Nouveau Champ</h3>
-              <p className="text-gray-500 text-sm mb-8">Définissez une nouvelle zone de diagnostic agricole.</p>
+              <h3 className="text-xl md:text-2xl font-bold mb-2 text-agri-ink">Nouveau Champ</h3>
+              <p className="text-gray-500 text-xs md:text-sm mb-6 md:mb-8">Définissez une nouvelle zone de diagnostic agricole.</p>
               
-              <form onSubmit={addField} className="space-y-6">
+              <form onSubmit={addField} className="space-y-4 md:space-y-6">
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Désignation</label>
                   <input 
@@ -506,21 +550,21 @@ function AppContent() {
                     value={newFieldName}
                     onChange={(e) => setNewFieldName(e.target.value)}
                     placeholder="Ex: Parcelle Nord Alpha"
-                    className="w-full bg-agri-bg border border-gray-100 rounded-2xl px-6 py-4 focus:outline-none focus:border-agri-primary transition-all font-medium text-agri-ink"
+                    className="w-full bg-agri-bg border border-gray-100 rounded-2xl px-5 md:px-6 py-3.5 md:py-4 focus:outline-none focus:border-agri-primary transition-all font-medium text-agri-ink text-sm md:text-base"
                     autoFocus
                   />
                 </div>
-                <div className="flex gap-4 pt-4">
+                <div className="flex gap-3 md:gap-4 pt-2 md:pt-4">
                   <button 
                     type="button"
                     onClick={() => setShowAddField(false)}
-                    className="flex-1 px-6 py-4 rounded-2xl bg-gray-100 text-gray-500 font-bold transition-colors hover:bg-gray-200"
+                    className="flex-1 px-4 py-3.5 md:py-4 rounded-2xl bg-gray-100 text-gray-500 font-bold text-sm md:text-base transition-colors hover:bg-gray-200"
                   >
                     FERMER
                   </button>
                   <button 
                     type="submit"
-                    className="flex-1 px-6 py-4 rounded-2xl bg-agri-primary text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-agri-primary/20"
+                    className="flex-1 px-4 py-3.5 md:py-4 rounded-2xl bg-agri-primary text-white font-bold text-sm md:text-base hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-agri-primary/20"
                   >
                     CRÉER
                   </button>

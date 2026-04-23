@@ -45,10 +45,13 @@ service cloud.firestore {
     }
 
     function isValidCropScan(data) {
-      return data.keys().hasAll(['imageUrl', 'diagnosis', 'createdAt']) &&
-             data.keys().size() <= 7 &&
-             data.imageUrl is string && data.imageUrl.size() <= 1000 &&
+      return data.keys().hasAll(['imageUrl', 'diagnosis', 'status', 'prediction', 'recommendations', 'createdAt']) &&
+             data.keys().size() <= 10 &&
+             data.imageUrl is string && data.imageUrl.size() <= 2000000 &&
              data.diagnosis is string && data.diagnosis.size() <= 5000 &&
+             data.status in ['healthy', 'warning', 'diseased'] &&
+             data.prediction is string && data.prediction.size() <= 5000 &&
+             data.recommendations is string && data.recommendations.size() <= 5000 &&
              data.createdAt == request.time;
     }
 
